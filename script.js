@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // RSVP Form Submission to Google Sheets
 // IMPORTANT: Replace 'YOUR_GOOGLE_SCRIPT_URL' with your actual Google Apps Script Web App URL
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxfBXravlS9XjXsUWIa5W9sjJZOtPtX4NiEJjkkqB8XW0WZ8l3LaKg-Jx_9v2CE2CvlrA/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbweGV9TvDeWSlpYVHpUgbpkCJVjszrlefUiDuDxmoduYLtqNW35FhKYthdWhpcsGpv3Tw/exec';
 
 document.getElementById('rsvpForm').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -50,16 +50,35 @@ document.getElementById('rsvpForm').addEventListener('submit', async function(e)
         // Send data to Google Sheets via Apps Script
         const response = await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
-            mode: 'no-cors',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'text/plain;charset=utf-8',
             },
             body: JSON.stringify(formData)
         });
 
-        // Note: With no-cors mode, we can't read the response, but the data is sent
-        // Show success message
-        formStatus.textContent = 'Thank you! Your RSVP has been submitted successfully.';
+        let result;
+        try {
+            result = await response.json();
+        } catch (parseError) {
+            throw new Error('Unexpected response from server. Please ensure the Apps Script deployment allows access.');
+        }
+        console.log('RSVP response:', result);
+
+        if (result.status !== 'success') {
+            throw new Error(result.message || 'Submission failed.');
+        }
+
+        const statusDetails = [];
+        if (result.email) {
+            statusDetails.push(result.email.success ? 'Email confirmed' : `Email: ${result.email.message}`);
+        }
+        if (result.messaging) {
+            statusDetails.push(result.messaging.success ? 'SMS sent' : `SMS: ${result.messaging.message}`);
+        }
+
+        const detailText = statusDetails.length ? ` (${statusDetails.join(' | ')})` : '';
+
+        formStatus.textContent = `Thank you! Your RSVP has been submitted successfully.`;
         formStatus.classList.add('success');
 
         // Reset form
@@ -67,7 +86,8 @@ document.getElementById('rsvpForm').addEventListener('submit', async function(e)
 
     } catch (error) {
         console.error('Error:', error);
-        formStatus.textContent = 'There was an error submitting your RSVP. Please try again or contact us directly.';
+        const errorMessage = error && error.message ? ` ${error.message}` : '';
+        formStatus.textContent = `There was an error submitting your RSVP.${errorMessage ? ' ' + errorMessage : ''}`;
         formStatus.classList.add('error');
     } finally {
         // Re-enable submit button
