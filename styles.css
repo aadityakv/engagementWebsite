@@ -126,6 +126,21 @@ header h1 {
     font-style: italic;
 }
 
+.save-the-date-card {
+    margin: 2.5rem auto 0;
+    max-width: 600px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    border: 8px solid #fff;
+}
+
+.save-the-date-card img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
 /* Event Cards */
 .event-card {
     background: #fafafa;
