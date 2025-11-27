@@ -163,12 +163,15 @@ const WeddingWebsite = () => {
         }
         .card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(107,45,92,0.12); }
         
-        .timeline-item { position: relative; }
-        .timeline-item::before {
-          content: ''; position: absolute; left: 29px; top: 64px; width: 2px; height: calc(100% - 30px);
+        .timeline-item:first-child .timeline-line {
+          position: absolute;
+          left: 30px;
+          top: 60px;
+          width: 2px;
+          height: calc(200% + 64px);
           background: linear-gradient(to bottom, #C9A227, #2A9D8F);
+          z-index: 0;
         }
-        .timeline-item:last-child::before { display: none; }
         
         input, textarea, select {
           width: 100%; padding: 14px 16px; border-radius: 10px; border: 1px solid #E8D5F2;
@@ -213,17 +216,19 @@ const WeddingWebsite = () => {
         .flip-card-inner {
           position: relative;
           width: 100%;
-          transition: transform 0.8s;
+          transition: transform 0.8s, min-height 0.8s;
           transform-style: preserve-3d;
         }
 
         .flip-card-inner.flipped {
           transform: rotateY(180deg);
+          min-height: 400px;
         }
 
         @media (hover: hover) and (pointer: fine) {
           .flip-card:hover .flip-card-inner {
             transform: rotateY(180deg);
+            min-height: 400px;
           }
         }
 
@@ -247,6 +252,7 @@ const WeddingWebsite = () => {
           padding: 60px 40px;
           box-shadow: 0 20px 60px rgba(0,0,0,0.4);
           border: 3px solid #C9A227;
+          min-height: 400px;
         }
 
         @media (max-width: 768px) {
@@ -255,9 +261,11 @@ const WeddingWebsite = () => {
           }
           .flip-card {
             max-width: 100%;
+            margin-bottom: 32px !important;
           }
           .flip-card-back {
             padding: 40px 20px;
+            min-height: 400px;
           }
           .menu-btn {
             left: 20px !important;
@@ -408,9 +416,10 @@ const WeddingWebsite = () => {
             letterSpacing: '0.5px',
             marginBottom: '48px',
             maxWidth: '600px',
-            margin: '0 auto 48px'
+            margin: '0 auto 48px',
+            padding: '0 20px'
           }}>
-            We are so excited to celebrate this milestone with all of you. Please visit our website for finalized details closer to the date.
+            We are so excited to celebrate this milestone with all of you. Please visit our website for finalized details closer to the date!
           </p>
 
           {/* RSVP Button */}
@@ -488,25 +497,30 @@ const WeddingWebsite = () => {
             <p style={{ fontFamily: "'Montserrat', sans-serif", color: 'rgba(255,255,255,0.9)', letterSpacing: '3px', fontSize: '12px', textTransform: 'uppercase' }}>Schedule of Events</p>
           </div>
 
-          {[
-            { time: '4:00 PM', title: 'Arrival & Welcome', desc: 'Light refreshments as we gather together', icon: '🌸' },
-            { time: '5:00 PM', title: 'Ceremony & Rituals', desc: 'Traditional Bengali & Tamil ceremonies', icon: '🪔' },
-            { time: '7:00 PM', title: 'Cocktail Hour', desc: 'Celebrate with drinks, appetizers & music', icon: '🥂' }
-          ].map((item, i) => (
-            <div key={i} className="timeline-item" style={{ display: 'flex', gap: '20px', marginBottom: '32px' }}>
-              <div style={{
-                width: '60px', height: '60px', borderRadius: '50%',
-                background: `linear-gradient(135deg, ${c.turquoise}, ${c.bayBlue})`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0,
-                boxShadow: '0 4px 16px rgba(42,157,143,0.3)'
-              }}>{item.icon}</div>
-              <div className="card" style={{ flex: 1 }}>
-                <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: c.turquoise, fontWeight: 600, marginBottom: '6px', letterSpacing: '1px' }}>{item.time}</p>
-                <h3 style={{ fontSize: '22px', color: c.deepPurple, marginBottom: '8px', fontWeight: 600, fontFamily: "'Cormorant Garamond', Georgia" }}>{item.title}</h3>
-                <p style={{ fontFamily: "'Montserrat', sans-serif", color: c.charcoal, opacity: 0.75, fontSize: '14px', lineHeight: 1.6 }}>{item.desc}</p>
+          <div>
+            {[
+              { time: '4:00 PM', title: 'Arrival & Welcome', desc: 'Light refreshments as we gather together', icon: '🌸' },
+              { time: '5:00 PM', title: 'Ceremony & Rituals', desc: 'Traditional Bengali & Tamil ceremonies', icon: '🪔' },
+              { time: '7:00 PM', title: 'Cocktail Hour', desc: 'Celebrate with drinks, appetizers & music', icon: '🥂' }
+            ].map((item, i) => (
+              <div key={i} className="timeline-item" style={{ display: 'flex', gap: '20px', marginBottom: i < 2 ? '32px' : '0', alignItems: 'center', position: 'relative' }}>
+                {i === 0 && <div className="timeline-line"></div>}
+                <div style={{
+                  width: '60px', height: '60px', borderRadius: '50%',
+                  background: `linear-gradient(135deg, ${c.turquoise}, ${c.bayBlue})`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', flexShrink: 0,
+                  boxShadow: '0 4px 16px rgba(42,157,143,0.3)',
+                  position: 'relative',
+                  zIndex: 1
+                }}>{item.icon}</div>
+                <div className="card" style={{ flex: 1 }}>
+                  <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: c.turquoise, fontWeight: 600, marginBottom: '6px', letterSpacing: '1px' }}>{item.time}</p>
+                  <h3 style={{ fontSize: '22px', color: c.deepPurple, marginBottom: '8px', fontWeight: 600, fontFamily: "'Cormorant Garamond', Georgia" }}>{item.title}</h3>
+                  <p style={{ fontFamily: "'Montserrat', sans-serif", color: c.charcoal, opacity: 0.75, fontSize: '14px', lineHeight: 1.6 }}>{item.desc}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
