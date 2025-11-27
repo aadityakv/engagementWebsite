@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sneha & Aaditya's Engagement Party</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>You're Invited!</h1>
+        <p class="subtitle">Join us as we celebrate our engagement</p>
+    </header>
+
+    <nav class="tabs">
+        <button class="tab-button active" data-tab="home">Home</button>
+        <button class="tab-button" data-tab="events">Events & Details</button>
+        <button class="tab-button" data-tab="rsvp">RSVP</button>
+    </nav>
+
+    <main class="container">
+        <!-- Home Tab -->
+        <section id="home" class="tab-content active">
+            <div class="welcome">
+                <h2>We're Getting Engaged!</h2>
+                <p>We are so excited to celebrate this special milestone with our closest family and friends.</p>
+                <p>Please join us for an evening of love, laughter, and celebration!</p>
+                <div class="couple-names">
+                    <h3>Sneha Basu & Aaditya Venkateswaran</h3>
+                </div>
+                <div class="save-the-date-card">
+                    <img src="savethedate.png" alt="Save the Date for Sneha and Aaditya's celebration">
+                </div>
+            </div>
+        </section>
+
+        <!-- Events & Details Tab -->
+        <section id="events" class="tab-content">
+            <h2>Event Details</h2>
+
+            <div class="event-card">
+                <h3>Date & Time</h3>
+                <p><strong>Date:</strong> Friday, March 21, 2026</p>
+                <p><strong>Time:</strong> [Add Time]</p>
+            </div>
+
+            <div class="event-card">
+                <h3>Venue</h3>
+                <p><strong>Location:</strong> Sugar Land, TX</p>
+                <p><strong>Address:</strong> [Add specific venue address]</p>
+                <p><a href="https://www.google.com/maps/place/Sugar+Land,+TX" class="map-link" target="_blank">View on Map</a></p>
+            </div>
+
+            <div class="event-card">
+                <h3>Dress Code</h3>
+                <p>[Specify dress code - e.g., Cocktail Attire, Smart Casual]</p>
+            </div>
+
+            <div class="event-card">
+                <h3>Schedule</h3>
+                <ul class="schedule-list">
+                    <li><strong>[Time]</strong> - Arrival & Welcome Drinks</li>
+                    <li><strong>[Time]</strong> - Dinner</li>
+                    <li><strong>[Time]</strong> - Toast & Celebration</li>
+                    <li><strong>[Time]</strong> - Dancing & Entertainment</li>
+                </ul>
+            </div>
+
+            <div class="event-card">
+                <h3>Additional Information</h3>
+                <p>[Add any special notes, parking information, accommodation suggestions, etc.]</p>
+            </div>
+        </section>
+
+        <!-- RSVP Tab -->
+        <section id="rsvp" class="tab-content">
+            <h2>RSVP</h2>
+            <p class="rsvp-intro">Please let us know if you can join us by [RSVP Deadline Date]</p>
+
+            <form id="rsvpForm" class="rsvp-form">
+                <div class="form-group">
+                    <label for="name">Full Name(s) *</label>
+                    <input type="text" id="name" name="name" required placeholder="Enter your name">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="email" required placeholder="your@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" placeholder="(123) 456-7890">
+                </div>
+
+                <div class="form-group">
+                    <label for="attendance">Will you be attending? *</label>
+                    <select id="attendance" name="attendance" required>
+                        <option value="">Please select</option>
+                        <option value="yes">Yes, I'll be there!</option>
+                        <option value="no">Sorry, I can't make it</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="guests">Number of Guests (including yourself) *</label>
+                    <input type="number" id="guests" name="guests" min="0" max="10" value="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="dietary">Dietary Restrictions or Allergies</label>
+                    <textarea id="dietary" name="dietary" rows="3" placeholder="Please let us know if you have any dietary requirements"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Special Message or Song Request</label>
+                    <textarea id="message" name="message" rows="3" placeholder="Share your wishes or request a song!"></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">Submit RSVP</button>
+                <p class="form-status" id="formStatus"></p>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 - We can't wait to celebrate with you!</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

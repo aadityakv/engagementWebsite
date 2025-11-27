@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbweGV9TvDeWSlpYVHpUgbpkCJVjszrlefUiDuDxmoduYLtqNW35FhKYthdWhpcsGpv3Tw/exec';
-
 const WeddingWebsite = () => {
   const [activeTab, setActiveTab] = useState('home');
   const [menuOpen, setMenuOpen] = useState(false);
@@ -9,8 +7,6 @@ const WeddingWebsite = () => {
     name: '', email: '', phone: '', attendance: '', guests: '1', dietary: '', message: ''
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
-  const [formError, setFormError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const c = { 
     deepPurple: '#6B2D5C', 
@@ -45,55 +41,10 @@ const WeddingWebsite = () => {
     </svg>
   );
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setFormError('');
-    setFormSubmitted(false);
-
-    const submissionData = {
-      ...formData,
-      timestamp: new Date().toLocaleString()
-    };
-
-    try {
-      const response = await fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'text/plain;charset=utf-8',
-        },
-        body: JSON.stringify(submissionData)
-      });
-
-      let result;
-      try {
-        result = await response.json();
-      } catch (parseError) {
-        throw new Error('Unexpected response from server. Please ensure the Apps Script deployment allows access.');
-      }
-
-      if (result.status !== 'success') {
-        throw new Error(result.message || 'Submission failed.');
-      }
-
-      setFormSubmitted(true);
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        attendance: '',
-        guests: '1',
-        dietary: '',
-        message: ''
-      });
-
-      setTimeout(() => setFormSubmitted(false), 5000);
-    } catch (error) {
-      console.error('Error:', error);
-      setFormError(error.message || 'There was an error submitting your RSVP. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
+    setFormSubmitted(true);
+    setTimeout(() => setFormSubmitted(false), 3000);
   };
 
   const scrollToSection = (section) => {
@@ -128,8 +79,7 @@ const WeddingWebsite = () => {
           color: white; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 500;
           letter-spacing: 2px; cursor: pointer; transition: all 0.3s; border-radius: 8px; width: 100%;
         }
-        .btn-solid:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(42,157,143,0.3); }
-        .btn-solid:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-solid:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(42,157,143,0.3); }
         
         .view-details { 
           color: rgba(255,255,255,0.9); font-family: 'Montserrat', sans-serif; font-size: 13px;
@@ -204,52 +154,35 @@ const WeddingWebsite = () => {
       {activeTab === 'home' && (
         <section style={{ minHeight: '100vh', display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
           {/* Left - Photo Side */}
-          <div style={{
+          <div style={{ 
             flex: '1 1 50%', minHeight: '100vh', minWidth: '300px',
-            background: c.cream,
-            display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '48px',
-            position: 'relative', overflow: 'hidden'
+            background: `linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1519741497674-611481863552?w=800') center/cover`,
+            display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '48px',
+            position: 'relative'
           }}>
-            {/* Border on right edge */}
-            <IndianBorder />
-
-            <div style={{ maxWidth: '500px', width: '100%', position: 'relative', zIndex: 1, paddingRight: '40px' }}>
-              <h1 style={{
-                fontFamily: "'Great Vibes', cursive", fontSize: 'clamp(48px, 8vw, 72px)',
-                color: c.deepPurple, marginBottom: '16px', textAlign: 'center'
-              }}>
-                Sneha & Aaditya
-              </h1>
-              <p style={{
-                fontFamily: "'Montserrat', sans-serif", fontSize: '14px', color: c.charcoal,
-                lineHeight: 1.7, letterSpacing: '0.5px', textAlign: 'center', marginBottom: '32px', opacity: 0.8
-              }}>
-                We can't wait to share our special day with you. Join us as we celebrate our love and begin our journey together.
-              </p>
-              <img
-                src="/savethedate.png"
-                alt="Save the Date for Sneha and Aaditya's celebration"
-                style={{
-                  width: '100%',
-                  height: 'auto',
-                  borderRadius: '16px',
-                  boxShadow: '0 10px 40px rgba(107,45,92,0.2)',
-                  border: `2px solid ${c.gold}40`
-                }}
-              />
-            </div>
+            <h1 style={{ 
+              fontFamily: "'Great Vibes', cursive", fontSize: 'clamp(48px, 8vw, 72px)', 
+              color: 'white', marginBottom: '16px', textShadow: '2px 4px 12px rgba(0,0,0,0.3)'
+            }}>
+              Sneha & Aaditya
+            </h1>
+            <p style={{ 
+              fontFamily: "'Montserrat', sans-serif", fontSize: '14px', color: 'rgba(255,255,255,0.9)',
+              maxWidth: '400px', lineHeight: 1.7, letterSpacing: '0.5px'
+            }}>
+              We can't wait to share our special day with you. Join us as we celebrate our love and begin our journey together.
+            </p>
           </div>
 
           {/* Right - Purple Panel with Indian Border */}
-          <div style={{
+          <div style={{ 
             flex: '1 1 50%', minHeight: '100vh', minWidth: '300px',
             background: c.deepPurple, position: 'relative', overflow: 'hidden',
             display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
             padding: '48px'
           }}>
-            {/* Border on right edge */}
             <IndianBorder />
-
+            
             <div style={{ textAlign: 'center', zIndex: 1, paddingRight: '40px' }}>
               <p style={{ 
                 fontFamily: "'Cormorant Garamond', Georgia", fontStyle: 'italic',
@@ -413,19 +346,11 @@ const WeddingWebsite = () => {
                 <textarea rows={2} placeholder="Share your wishes!" value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})} />
               </div>
 
-              <button type="submit" className="btn-solid" disabled={isSubmitting}>
-                {isSubmitting ? 'Submitting...' : formSubmitted ? '✓ Submitted!' : 'Submit RSVP'}
-              </button>
-
+              <button type="submit" className="btn-solid">{formSubmitted ? '✓ Submitted!' : 'Submit RSVP'}</button>
+              
               {formSubmitted && (
                 <p style={{ textAlign: 'center', marginTop: '16px', color: c.turquoise, fontFamily: "'Montserrat', sans-serif", fontSize: '14px' }}>
                   Thank you! We can't wait to celebrate with you! 🎊
-                </p>
-              )}
-
-              {formError && (
-                <p style={{ textAlign: 'center', marginTop: '16px', color: '#d32f2f', fontFamily: "'Montserrat', sans-serif", fontSize: '14px' }}>
-                  {formError}
                 </p>
               )}
             </form>
