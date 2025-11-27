@@ -107,7 +107,13 @@ const WeddingWebsite = () => {
 
 
   return (
-    <div style={{ fontFamily: 'Georgia, serif', background: c.deepPurple, minHeight: '100vh', color: c.charcoal, position: 'relative' }}>
+    <div style={{
+      fontFamily: 'Georgia, serif',
+      background: `linear-gradient(180deg, ${c.deepPurple} 0%, #8B4A7A 40%, #A67B9E 70%, #C4A5C0 100%)`,
+      minHeight: '100vh',
+      color: c.charcoal,
+      position: 'relative'
+    }}>
       {/* Continuous borders running through entire page */}
       <div className="border-left" style={{ position: 'fixed', left: 0, top: 0, height: '100%', transform: 'scaleX(-1)', zIndex: 998, pointerEvents: 'none' }}>
         <IndianBorder />
@@ -294,7 +300,6 @@ const WeddingWebsite = () => {
       {/* HOME - Hero Section */}
       <section id="home-section" style={{
         minHeight: '100vh',
-        background: c.deepPurple,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -454,7 +459,6 @@ const WeddingWebsite = () => {
       {/* DETAILS */}
       <section id="details-section" style={{
         padding: '80px 24px 80px 24px',
-        background: c.deepPurple,
         position: 'relative'
       }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
@@ -487,7 +491,6 @@ const WeddingWebsite = () => {
       {/* SCHEDULE */}
       <section id="schedule-section" style={{
         padding: '80px 24px 80px 24px',
-        background: c.deepPurple,
         position: 'relative'
       }}>
         <div style={{ maxWidth: '560px', margin: '0 auto' }}>
@@ -527,7 +530,6 @@ const WeddingWebsite = () => {
       {/* RSVP */}
       <section id="rsvp-section" style={{
         padding: '80px 24px 80px 24px',
-        background: c.deepPurple,
         position: 'relative'
       }}>
           <div style={{ maxWidth: '480px', margin: '0 auto' }}>
