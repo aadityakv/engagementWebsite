@@ -10,6 +10,7 @@ const WeddingWebsite = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [formError, setFormError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [cardFlipped, setCardFlipped] = useState(false);
 
   // Smooth scroll function
   const scrollToSection = (sectionId) => {
@@ -20,10 +21,10 @@ const WeddingWebsite = () => {
     }
   };
 
-  const c = { 
-    deepPurple: '#6B2D5C', 
-    gold: '#C9A227', 
-    cream: '#FDF8F3', 
+  const c = {
+    deepPurple: '#6B2D5C',
+    gold: '#C9A227',
+    cream: '#FDF8F3',
     charcoal: '#2D2D2D',
     turquoise: '#2A9D8F',
     bayBlue: '#1E3A5F'
@@ -106,7 +107,15 @@ const WeddingWebsite = () => {
 
 
   return (
-    <div style={{ fontFamily: 'Georgia, serif', background: c.cream, minHeight: '100vh', color: c.charcoal }}>
+    <div style={{ fontFamily: 'Georgia, serif', background: c.deepPurple, minHeight: '100vh', color: c.charcoal, position: 'relative' }}>
+      {/* Continuous borders running through entire page */}
+      <div className="border-left" style={{ position: 'fixed', left: 0, top: 0, height: '100%', transform: 'scaleX(-1)', zIndex: 998, pointerEvents: 'none' }}>
+        <IndianBorder />
+      </div>
+      <div className="border-right" style={{ position: 'fixed', right: 0, top: 0, height: '100%', zIndex: 998, pointerEvents: 'none' }}>
+        <IndianBorder />
+      </div>
+
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@400;500;600&display=swap');
         
@@ -184,11 +193,72 @@ const WeddingWebsite = () => {
           background: linear-gradient(135deg, #6B2D5C, #1E3A5F, #2A9D8F);
           -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
+
+        .flip-card {
+          perspective: 1000px;
+          width: 100%;
+          max-width: 700px;
+          margin: 0 auto;
+        }
+
+        .flip-card-inner {
+          position: relative;
+          width: 100%;
+          transition: transform 0.8s;
+          transform-style: preserve-3d;
+        }
+
+        .flip-card-inner.flipped {
+          transform: rotateY(180deg);
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+          .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+          }
+        }
+
+        .flip-card-front, .flip-card-back {
+          width: 100%;
+          -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+          border-radius: 16px;
+        }
+
+        .flip-card-back {
+          position: absolute;
+          top: 0;
+          left: 0;
+          transform: rotateY(180deg);
+          background: linear-gradient(135deg, #6B2D5C, #2A9D8F);
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          padding: 60px 40px;
+          box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+          border: 3px solid #C9A227;
+        }
+
+        @media (max-width: 768px) {
+          .border-left, .border-right {
+            display: none;
+          }
+          .flip-card {
+            max-width: 100%;
+          }
+          .flip-card-back {
+            padding: 40px 20px;
+          }
+          .menu-btn {
+            left: 20px !important;
+          }
+        }
       `}</style>
 
       {/* Menu Button - Fixed */}
-      <button className="menu-btn" onClick={() => setMenuOpen(!menuOpen)} 
-        style={{ position: 'fixed', top: '20px', left: '20px', zIndex: 1001 }}>
+      <button className="menu-btn" onClick={() => setMenuOpen(!menuOpen)}
+        style={{ position: 'fixed', top: '20px', left: '90px', zIndex: 1001 }}>
         <span style={{ transform: menuOpen ? 'rotate(45deg) translateY(7px)' : 'none' }}></span>
         <span style={{ opacity: menuOpen ? 0 : 1 }}></span>
         <span style={{ transform: menuOpen ? 'rotate(-45deg) translateY(-7px)' : 'none' }}></span>
@@ -204,96 +274,165 @@ const WeddingWebsite = () => {
         </div>
       )}
 
-      {/* HOME - Split Screen Hero */}
-      <section id="home-section" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-          {/* Left - Photo Side */}
-          <div style={{
-            flex: '1 1 50%', minHeight: '100vh', minWidth: '300px',
-            background: c.cream,
-            display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '48px',
-            position: 'relative', overflow: 'hidden'
+      {/* HOME - Hero Section */}
+      <section id="home-section" style={{
+        minHeight: '100vh',
+        background: c.deepPurple,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '80px 24px',
+        position: 'relative'
+      }}>
+        {/* Content Container */}
+        <div style={{ maxWidth: '900px', width: '100%', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+          {/* Names */}
+          <h1 style={{
+            fontFamily: "'Great Vibes', cursive",
+            fontSize: 'clamp(56px, 10vw, 96px)',
+            color: 'white',
+            marginBottom: '24px',
+            textShadow: '0 2px 20px rgba(0,0,0,0.2)'
           }}>
-            {/* Border on right edge */}
-            <IndianBorder />
+            Sneha & Aaditya
+          </h1>
 
-            <div style={{ maxWidth: '500px', width: '100%', position: 'relative', zIndex: 1, paddingRight: '40px' }}>
-              <h1 style={{
-                fontFamily: "'Great Vibes', cursive", fontSize: 'clamp(48px, 8vw, 72px)',
-                color: c.deepPurple, marginBottom: '16px', textAlign: 'center'
-              }}>
-                Sneha & Aaditya
-              </h1>
-              <p style={{
-                fontFamily: "'Montserrat', sans-serif", fontSize: '14px', color: c.charcoal,
-                lineHeight: 1.7, letterSpacing: '0.5px', textAlign: 'center', marginBottom: '32px', opacity: 0.8
-              }}>
-                We can't wait to share our special day with you. Join us as we celebrate our love and begin our journey together.
-              </p>
-              <img
-                src="/savethedate.png"
-                alt="Save the Date for Sneha and Aaditya's celebration"
-                style={{
-                  width: '100%',
-                  height: 'auto',
-                  borderRadius: '16px',
-                  boxShadow: '0 10px 40px rgba(107,45,92,0.2)',
-                  border: `2px solid ${c.gold}40`
-                }}
-              />
-            </div>
+          {/* Date */}
+          <div style={{ marginBottom: '48px' }}>
+            <p style={{
+              fontFamily: "'Cormorant Garamond', Georgia",
+              fontStyle: 'italic',
+              fontSize: '24px',
+              color: 'rgba(255,255,255,0.9)',
+              marginBottom: '8px'
+            }}>
+              Saturday
+            </p>
+            <h2 style={{
+              fontFamily: "'Cormorant Garamond', Georgia",
+              fontSize: 'clamp(32px, 5vw, 42px)',
+              color: c.gold,
+              fontWeight: 400,
+              letterSpacing: '3px'
+            }}>
+              March 21, 2026
+            </h2>
           </div>
 
-          {/* Right - Purple Panel with Indian Border */}
-          <div style={{
-            flex: '1 1 50%', minHeight: '100vh', minWidth: '300px',
-            background: c.deepPurple, position: 'relative', overflow: 'hidden',
-            display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center',
-            padding: '48px'
-          }}>
-            {/* Border on right edge */}
-            <IndianBorder />
-
-            <div style={{ textAlign: 'center', zIndex: 1, paddingRight: '40px' }}>
-              <p style={{ 
-                fontFamily: "'Cormorant Garamond', Georgia", fontStyle: 'italic',
-                fontSize: '28px', color: 'rgba(255,255,255,0.9)', marginBottom: '8px'
-              }}>
-                Saturday
-              </p>
-              <h2 style={{
-                fontFamily: "'Cormorant Garamond', Georgia", fontSize: 'clamp(36px, 5vw, 48px)',
-                color: 'white', fontWeight: 400, marginBottom: '48px', letterSpacing: '2px'
-              }}>
-                March 21, 2026
-              </h2>
-
-              <button className="btn-outline" onClick={() => scrollToSection('rsvp-section')}>
-                RSVP
-              </button>
-
-              <div style={{ marginTop: '64px', display: 'flex', justifyContent: 'center' }}>
-                <button className="view-details" onClick={() => scrollToSection('details-section')}>
-                  Scroll to Explore
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M6 9l6 6 6-6"/>
-                  </svg>
-                </button>
+          {/* Photo - Flip Card */}
+          <div className="flip-card" style={{ marginBottom: '48px', cursor: 'pointer' }} onClick={() => setCardFlipped(!cardFlipped)}>
+            <div className={`flip-card-inner ${cardFlipped ? 'flipped' : ''}`}>
+              {/* Front */}
+              <div className="flip-card-front">
+                <img
+                  src="/savethedate.png"
+                  alt="Save the Date for Sneha and Aaditya's celebration"
+                  style={{
+                    width: '100%',
+                    height: 'auto',
+                    borderRadius: '16px',
+                    boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
+                    border: `3px solid ${c.gold}`,
+                    display: 'block'
+                  }}
+                />
+              </div>
+              {/* Back */}
+              <div className="flip-card-back">
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{
+                    fontSize: '48px',
+                    marginBottom: '24px'
+                  }}>✨</div>
+                  <h3 style={{
+                    fontFamily: "'Great Vibes', cursive",
+                    fontSize: '42px',
+                    color: 'white',
+                    marginBottom: '20px'
+                  }}>
+                    You're Invited!
+                  </h3>
+                  <p style={{
+                    fontFamily: "'Montserrat', sans-serif",
+                    fontSize: '16px',
+                    color: 'rgba(255,255,255,0.9)',
+                    lineHeight: 1.8,
+                    marginBottom: '16px'
+                  }}>
+                    Join us for an evening of love, laughter, and celebration
+                  </p>
+                  <div style={{
+                    width: '80px',
+                    height: '2px',
+                    background: c.gold,
+                    margin: '20px auto'
+                  }}/>
+                  <p style={{
+                    fontFamily: "'Cormorant Garamond', Georgia",
+                    fontSize: '20px',
+                    color: c.gold,
+                    fontWeight: 600
+                  }}>
+                    Sugar Land, Texas
+                  </p>
+                </div>
               </div>
             </div>
-
-            {/* Decorative gold accent */}
-            <div style={{
-              position: 'absolute', bottom: '40px', left: '50%', transform: 'translateX(-50%)',
-              width: '100px', height: '2px', background: `linear-gradient(90deg, transparent, ${c.gold}, transparent)`
-            }}/>
           </div>
-        </section>
+
+          {/* Tagline */}
+          <p style={{
+            fontFamily: "'Montserrat', sans-serif",
+            fontSize: '15px',
+            color: 'rgba(255,255,255,0.85)',
+            lineHeight: 1.8,
+            letterSpacing: '0.5px',
+            marginBottom: '48px',
+            maxWidth: '600px',
+            margin: '0 auto 48px'
+          }}>
+            Join us as we celebrate our love and begin our journey together
+          </p>
+
+          {/* RSVP Button */}
+          <button className="btn-outline" onClick={() => scrollToSection('rsvp-section')}>
+            RSVP
+          </button>
+
+          {/* Scroll Indicator */}
+          <div style={{ marginTop: '80px', display: 'flex', justifyContent: 'center' }}>
+            <button className="view-details" onClick={() => scrollToSection('details-section')}>
+              Scroll to Explore
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M6 9l6 6 6-6"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Decorative gold accent at bottom */}
+        <div style={{
+          position: 'absolute',
+          bottom: '60px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '120px',
+          height: '2px',
+          background: `linear-gradient(90deg, transparent, ${c.gold}, transparent)`,
+          zIndex: 1
+        }}/>
+      </section>
 
       {/* DETAILS */}
-      <section id="details-section" style={{ minHeight: '100vh', padding: '80px 24px', background: c.cream }}>
+      <section id="details-section" style={{
+        padding: '80px 24px 80px 24px',
+        background: c.deepPurple,
+        position: 'relative'
+      }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '56px' }}>
-            <h2 className="gradient-text" style={{ fontSize: '36px', fontWeight: 600, marginBottom: '16px', fontFamily: "'Cormorant Garamond', Georgia" }}>Event Details</h2>
+          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+            <h2 style={{ fontSize: '36px', fontWeight: 600, marginBottom: '16px', fontFamily: "'Cormorant Garamond', Georgia", color: 'white' }}>Event Details</h2>
             <div style={{ width: '80px', height: '2px', background: `linear-gradient(90deg, ${c.gold}, ${c.turquoise})`, margin: '0 auto' }} />
           </div>
 
@@ -319,12 +458,16 @@ const WeddingWebsite = () => {
       </section>
 
       {/* SCHEDULE */}
-      <section id="schedule-section" style={{ minHeight: '100vh', padding: '80px 24px', background: `linear-gradient(180deg, ${c.cream} 0%, #F5EBE6 100%)` }}>
+      <section id="schedule-section" style={{
+        padding: '80px 24px 80px 24px',
+        background: c.deepPurple,
+        position: 'relative'
+      }}>
         <div style={{ maxWidth: '560px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '56px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
             <p style={{ fontFamily: "'Great Vibes', cursive", fontSize: '28px', color: c.gold, marginBottom: '8px' }}>Saturday</p>
-            <h2 className="gradient-text" style={{ fontSize: '36px', fontWeight: 600, marginBottom: '16px', fontFamily: "'Cormorant Garamond', Georgia" }}>March 21, 2026</h2>
-            <p style={{ fontFamily: "'Montserrat', sans-serif", color: c.deepPurple, letterSpacing: '3px', fontSize: '12px', textTransform: 'uppercase' }}>Schedule of Events</p>
+            <h2 style={{ fontSize: '36px', fontWeight: 600, marginBottom: '16px', fontFamily: "'Cormorant Garamond', Georgia", color: 'white' }}>March 21, 2026</h2>
+            <p style={{ fontFamily: "'Montserrat', sans-serif", color: 'rgba(255,255,255,0.9)', letterSpacing: '3px', fontSize: '12px', textTransform: 'uppercase' }}>Schedule of Events</p>
           </div>
 
           {[
@@ -350,11 +493,15 @@ const WeddingWebsite = () => {
       </section>
 
       {/* RSVP */}
-      <section id="rsvp-section" style={{ minHeight: '100vh', padding: '80px 24px', background: `linear-gradient(180deg, #F5EBE6 0%, ${c.cream} 100%)` }}>
+      <section id="rsvp-section" style={{
+        padding: '80px 24px 80px 24px',
+        background: c.deepPurple,
+        position: 'relative'
+      }}>
           <div style={{ maxWidth: '480px', margin: '0 auto' }}>
             <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-              <h2 className="gradient-text" style={{ fontSize: '36px', fontWeight: 600, marginBottom: '12px', fontFamily: "'Cormorant Garamond', Georgia" }}>RSVP</h2>
-              <p style={{ fontFamily: "'Montserrat', sans-serif", color: c.deepPurple, fontSize: '14px', opacity: 0.8 }}>Please let us know if you can celebrate with us</p>
+              <h2 style={{ fontSize: '36px', fontWeight: 600, marginBottom: '12px', fontFamily: "'Cormorant Garamond', Georgia", color: 'white' }}>RSVP</h2>
+              <p style={{ fontFamily: "'Montserrat', sans-serif", color: 'rgba(255,255,255,0.9)', fontSize: '14px' }}>Please let us know if you can celebrate with us</p>
             </div>
 
             <form onSubmit={handleSubmit} className="card" style={{ padding: '36px' }}>
@@ -414,7 +561,7 @@ const WeddingWebsite = () => {
             </form>
 
             <div style={{ textAlign: 'center', marginTop: '32px' }}>
-              <button className="view-details" onClick={() => scrollToSection('home-section')} style={{ color: c.deepPurple }}>
+              <button className="view-details" onClick={() => scrollToSection('home-section')} style={{ color: 'rgba(255,255,255,0.9)' }}>
                 ← Back to Top
               </button>
             </div>
