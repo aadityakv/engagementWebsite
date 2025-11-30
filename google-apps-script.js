@@ -45,19 +45,45 @@ function doPost(e) {
     const data = JSON.parse(e.postData.contents);
     Logger.log('Incoming RSVP payload: %s', JSON.stringify(data));
 
-    const rowData = [
-      data.timestamp || new Date().toLocaleString(),
-      data.name || '',
-      data.email || '',
-      data.phone || '',
-      data.attendance || '',
-      data.guests || '',
-      data.dietary || '',
-      data.message || ''
-    ];
+    const timestamp = data.timestamp || new Date().toLocaleString();
+    const email = data.email || '';
+    const phone = data.phone || '';
+    const attendance = data.attendance || '';
+    const dietary = data.dietary || '';
+    const message = data.message || '';
 
-    sheet.appendRow(rowData);
-    Logger.log('Row appended for %s', data.email || 'unknown email');
+    // Add row for the main person submitting the form
+    const mainRowData = [
+      timestamp,
+      data.name || '',
+      email,
+      phone,
+      attendance,
+      data.guests || '',
+      dietary,
+      message
+    ];
+    sheet.appendRow(mainRowData);
+    Logger.log('Row appended for main person: %s', data.name || 'unknown name');
+
+    // Add additional rows for each guest (using same email as submitter)
+    if (data.guests) {
+      const guestNames = data.guests.split(',').map(name => name.trim()).filter(name => name !== '');
+      for (const guestName of guestNames) {
+        const guestRowData = [
+          timestamp,
+          guestName,
+          email,
+          phone,
+          attendance,
+          '',
+          dietary,
+          message
+        ];
+        sheet.appendRow(guestRowData);
+        Logger.log('Row appended for guest: %s', guestName);
+      }
+    }
 
     let emailResult;
     if (RSVP_CONFIG.emailConfirmation.enabled) {
