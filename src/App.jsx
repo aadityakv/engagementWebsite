@@ -12,6 +12,8 @@ const WeddingWebsite = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cardFlipped, setCardFlipped] = useState(false);
   const flipCardRef = useRef(null);
+  const hasScrolledRef = useRef(false);
+  const initialCardPositionRef = useRef(null);
 
   // Auto-flip card on scroll for mobile devices
   useEffect(() => {
@@ -19,11 +21,29 @@ const WeddingWebsite = () => {
     const isTouchDevice = window.matchMedia('(hover: none)').matches;
     if (!isTouchDevice) return;
 
+    // Store the initial position of the card to detect actual scrolling
+    const cardElement = flipCardRef.current;
+    if (cardElement) {
+      initialCardPositionRef.current = cardElement.getBoundingClientRect().top;
+    }
+
+    // Track scroll to ensure we don't flip on initial page load
+    const handleScroll = () => {
+      if (!hasScrolledRef.current && window.scrollY > 50) {
+        hasScrolledRef.current = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
+          // Only flip if user has actually scrolled (not on initial load)
+          if (!hasScrolledRef.current) return;
+
           if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
-            // Card is 60% visible, flip it
+            // Card is 60% visible and user has scrolled, flip it
             setCardFlipped(true);
           } else if (!entry.isIntersecting) {
             // Card has left the viewport, flip it back
@@ -36,12 +56,12 @@ const WeddingWebsite = () => {
       }
     );
 
-    const cardElement = flipCardRef.current;
     if (cardElement) {
       observer.observe(cardElement);
     }
 
     return () => {
+      window.removeEventListener('scroll', handleScroll);
       observer.disconnect();
     };
   }, []);
@@ -277,6 +297,7 @@ const WeddingWebsite = () => {
           -webkit-backface-visibility: hidden;
           backface-visibility: hidden;
           border-radius: 16px;
+          position: relative;
         }
 
         .flip-card-back {
@@ -293,6 +314,13 @@ const WeddingWebsite = () => {
           box-shadow: 0 20px 60px rgba(0,0,0,0.4);
           border: 3px solid #C9A227;
           min-height: 400px;
+        }
+
+        /* Hide tap indicator on desktop (hover-capable devices) */
+        @media (hover: hover) and (pointer: fine) {
+          .tap-indicator {
+            display: none !important;
+          }
         }
 
         @media (max-width: 768px) {
@@ -403,6 +431,25 @@ const WeddingWebsite = () => {
                     display: 'block'
                   }}
                 />
+                {/* Tap indicator for mobile */}
+                <div className="tap-indicator" style={{
+                  position: 'absolute',
+                  bottom: '16px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  background: 'rgba(0,0,0,0.7)',
+                  color: 'white',
+                  padding: '8px 16px',
+                  borderRadius: '20px',
+                  fontFamily: "'Montserrat', sans-serif",
+                  fontSize: '12px',
+                  letterSpacing: '1px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}>
+                  <span>👆</span> Tap to flip
+                </div>
               </div>
               {/* Back */}
               <div className="flip-card-back">
@@ -442,6 +489,25 @@ const WeddingWebsite = () => {
                   }}>
                     Sugar Land, Texas
                   </p>
+                </div>
+                {/* Tap indicator for mobile */}
+                <div className="tap-indicator" style={{
+                  position: 'absolute',
+                  bottom: '16px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  background: 'rgba(255,255,255,0.2)',
+                  color: 'white',
+                  padding: '8px 16px',
+                  borderRadius: '20px',
+                  fontFamily: "'Montserrat', sans-serif",
+                  fontSize: '12px',
+                  letterSpacing: '1px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}>
+                  <span>👆</span> Tap to flip back
                 </div>
               </div>
             </div>
