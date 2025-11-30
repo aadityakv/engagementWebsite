@@ -488,7 +488,46 @@ const WeddingWebsite = () => {
         </div>
       </section>
 
-      {/* SCHEDULE */}
+      {/* SCHEDULE - Under Construction */}
+      <section id="schedule-section" style={{
+        padding: '80px 24px 80px 24px',
+        position: 'relative'
+      }}>
+        <div style={{ maxWidth: '560px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+            <p style={{ fontFamily: "'Great Vibes', cursive", fontSize: '28px', color: c.gold, marginBottom: '8px' }}>Saturday</p>
+            <h2 style={{ fontSize: '36px', fontWeight: 600, marginBottom: '16px', fontFamily: "'Cormorant Garamond', Georgia", color: 'white' }}>March 21, 2026</h2>
+            <p style={{ fontFamily: "'Montserrat', sans-serif", color: 'rgba(255,255,255,0.9)', letterSpacing: '3px', fontSize: '12px', textTransform: 'uppercase' }}>Schedule of Events</p>
+          </div>
+
+          {/* Under Construction Card */}
+          <div className="card" style={{ textAlign: 'center', padding: '48px 32px' }}>
+            <div style={{
+              fontSize: '48px',
+              marginBottom: '24px'
+            }}>🚧</div>
+            <h3 style={{
+              fontSize: '24px',
+              color: c.deepPurple,
+              marginBottom: '16px',
+              fontWeight: 600,
+              fontFamily: "'Cormorant Garamond', Georgia"
+            }}>Coming Soon</h3>
+            <p style={{
+              fontFamily: "'Montserrat', sans-serif",
+              color: c.charcoal,
+              opacity: 0.75,
+              fontSize: '14px',
+              lineHeight: 1.8
+            }}>
+              We're still finalizing the schedule of events.<br />
+              Please check back closer to the date for the full itinerary!
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* SAVED SCHEDULE CODE - To restore: delete the "Under Construction" section above and uncomment this block
       <section id="schedule-section" style={{
         padding: '80px 24px 80px 24px',
         position: 'relative'
@@ -526,6 +565,7 @@ const WeddingWebsite = () => {
           </div>
         </div>
       </section>
+      */}
 
       {/* RSVP */}
       <section id="rsvp-section" style={{
