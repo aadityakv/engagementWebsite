@@ -567,13 +567,15 @@ const WeddingWebsite = () => {
               </div>
 
               <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', fontFamily: "'Montserrat', sans-serif", fontSize: '13px', color: c.deepPurple, marginBottom: '8px', fontWeight: 500 }}>Guest Names (up to 5)</label>
+                <label id="guest-names-label" style={{ display: 'block', fontFamily: "'Montserrat', sans-serif", fontSize: '13px', color: c.deepPurple, marginBottom: '8px', fontWeight: 500 }}>Guest Names (up to 5)</label>
                 {formData.guestNames.map((guestName, index) => (
                   <div key={index} style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
                     <input
                       type="text"
                       placeholder={`Guest ${index + 1} name`}
                       value={guestName}
+                      aria-label={`Guest ${index + 1} name`}
+                      aria-describedby="guest-names-label"
                       onChange={e => {
                         const newGuestNames = [...formData.guestNames];
                         newGuestNames[index] = e.target.value;
@@ -584,6 +586,7 @@ const WeddingWebsite = () => {
                     {formData.guestNames.length > 1 && (
                       <button
                         type="button"
+                        aria-label={`Remove guest ${index + 1}`}
                         onClick={() => {
                           const newGuestNames = formData.guestNames.filter((_, i) => i !== index);
                           setFormData({...formData, guestNames: newGuestNames});
@@ -607,6 +610,7 @@ const WeddingWebsite = () => {
                 {formData.guestNames.length < 5 && (
                   <button
                     type="button"
+                    aria-label="Add another guest (maximum 5 guests allowed)"
                     onClick={() => setFormData({...formData, guestNames: [...formData.guestNames, '']})}
                     style={{
                       padding: '8px 16px',
