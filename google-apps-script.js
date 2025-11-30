@@ -139,51 +139,79 @@ function sendConfirmationEmail(data) {
 
   const guestName = data.name || 'there';
   const eventDetails = RSVP_CONFIG.emailConfirmation.eventDetails;
-  const inviteBlob = buildCalendarInvite(eventDetails, {
-    name: data.name || '',
-    email: data.email || ''
-  });
   const dateText = Utilities.formatDate(eventDetails.startTime, RSVP_CONFIG.timeZone, 'EEEE, MMMM d, yyyy');
   const timeText = eventDetails.allDay
     ? 'All day (Central Time)'
     : `${Utilities.formatDate(eventDetails.startTime, RSVP_CONFIG.timeZone, 'h:mma')} - ${Utilities.formatDate(eventDetails.endTime, RSVP_CONFIG.timeZone, 'h:mma z')}`;
-  const htmlBody = [
-    `Hi ${guestName},`,
-    ' ',
-    'Thank you for RSVPing to our engagement celebration! We can’t wait to celebrate with you.',
-    ' ',
-    `<strong>Event:</strong> ${eventDetails.title}`,
-    `<strong>Date:</strong> ${dateText}`,
-    `<strong>Time:</strong> ${timeText}`,
-    `<strong>Location:</strong> ${eventDetails.location}`,
-    ' ',
-    'We included a calendar invite so you can add the details with one click.',
-    'Also, please keep an eye on <a href="https://snehaandaaditya.com">snehaandaaditya.com</a> for any updates as we get closer to the date!',
-    ' ',
-    `With love,<br>${RSVP_CONFIG.emailConfirmation.fromNames}`
-  ].join('<br>');
+
+  // Check if the person is attending or not
+  const isAttending = data.attendance && data.attendance.toString().toLowerCase().trim() === 'yes';
+
+  let htmlBody;
+  let emailSubject;
+  let attachments = [];
+
+  if (isAttending) {
+    // Email for guests who said YES
+    const inviteBlob = buildCalendarInvite(eventDetails, {
+      name: data.name || '',
+      email: data.email || ''
+    });
+    attachments = [inviteBlob];
+    emailSubject = RSVP_CONFIG.emailConfirmation.subject;
+    htmlBody = [
+      `Hi ${guestName},`,
+      ' ',
+      'Thank you for RSVPing to our engagement celebration! We can\'t wait to celebrate with you.',
+      ' ',
+      `<strong>Event:</strong> ${eventDetails.title}`,
+      `<strong>Date:</strong> ${dateText}`,
+      `<strong>Time:</strong> ${timeText}`,
+      `<strong>Location:</strong> ${eventDetails.location}`,
+      ' ',
+      'We included a calendar invite so you can add the details with one click.',
+      'Also, please keep an eye on <a href="https://snehaandaaditya.com">snehaandaaditya.com</a> for any updates as we get closer to the date!',
+      ' ',
+      `With love,<br>${RSVP_CONFIG.emailConfirmation.fromNames}`
+    ].join('<br>');
+  } else {
+    // Email for guests who said NO
+    emailSubject = 'We received your RSVP';
+    htmlBody = [
+      `Hi ${guestName},`,
+      ' ',
+      'Thank you for letting us know that you won\'t be able to make it to our engagement celebration. We\'ll miss having you there!',
+      ' ',
+      'If your plans change, please feel free to reach out or update your RSVP on <a href="https://snehaandaaditya.com">snehaandaaditya.com</a>.',
+      ' ',
+      `With love,<br>${RSVP_CONFIG.emailConfirmation.fromNames}`
+    ].join('<br>');
+  }
 
   MailApp.sendEmail({
     to: data.email,
-    subject: RSVP_CONFIG.emailConfirmation.subject,
+    subject: emailSubject,
     htmlBody: htmlBody,
     body: htmlBody.replace(/<br>/g, '\n').replace(/<[^>]+>/g, ''),
-    attachments: [inviteBlob]
+    attachments: attachments
   });
-  Logger.log('Confirmation email sent to %s', data.email);
+  Logger.log('Confirmation email sent to %s (attending: %s)', data.email, isAttending);
 
   let calendarResult = 'skipped';
-  if (RSVP_CONFIG.calendarId) {
+  // Only add to calendar if they're attending
+  if (isAttending && RSVP_CONFIG.calendarId) {
     Logger.log('Adding %s to shared calendar %s', data.email, RSVP_CONFIG.calendarId);
     addGuestToCalendarEvent(data.email, eventDetails);
     calendarResult = 'invite sent';
+  } else if (!isAttending) {
+    Logger.log('Guest not attending or attendance not provided; skipping Calendar event.');
   } else {
     Logger.log('No calendarId configured; skipping Calendar event.');
   }
 
   return {
     success: true,
-    message: 'Confirmation email sent',
+    message: isAttending ? 'Confirmation email sent' : 'Decline confirmation email sent',
     calendarInvite: calendarResult
   };
 }
