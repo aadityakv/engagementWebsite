@@ -76,7 +76,7 @@ function doPost(e) {
           email,
           phone,
           attendance,
-          '',
+          '', // Guest rows have empty guests field (only main submitter tracks the full guest list)
           dietary,
           message
         ];
