@@ -5,7 +5,7 @@ const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbweGV9TvDeWSl
 const WeddingWebsite = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
-    name: '', email: '', phone: '', attendance: '', guestNames: [''], dietary: '', message: ''
+    name: '', email: '', phone: '', attendance: '', guestNames: [], dietary: '', message: ''
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [formError, setFormError] = useState('');
@@ -95,7 +95,7 @@ const WeddingWebsite = () => {
         email: '',
         phone: '',
         attendance: '',
-        guestNames: [''],
+        guestNames: [],
         dietary: '',
         message: ''
       });
@@ -568,28 +568,26 @@ const WeddingWebsite = () => {
                       }}
                       style={{ flex: 1 }}
                     />
-                    {formData.guestNames.length > 1 && (
-                      <button
-                        type="button"
-                        aria-label={`Remove guest ${index + 1}`}
-                        onClick={() => {
-                          const newGuestNames = formData.guestNames.filter((_, i) => i !== index);
-                          setFormData({...formData, guestNames: newGuestNames});
-                        }}
-                        style={{
-                          padding: '8px 12px',
-                          background: 'transparent',
-                          border: `1px solid ${c.deepPurple}`,
-                          borderRadius: '8px',
-                          color: c.deepPurple,
-                          cursor: 'pointer',
-                          fontFamily: "'Montserrat', sans-serif",
-                          fontSize: '14px'
-                        }}
-                      >
-                        ✕
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      aria-label={`Remove guest ${index + 1}`}
+                      onClick={() => {
+                        const newGuestNames = formData.guestNames.filter((_, i) => i !== index);
+                        setFormData({...formData, guestNames: newGuestNames});
+                      }}
+                      style={{
+                        padding: '8px 12px',
+                        background: 'transparent',
+                        border: `1px solid ${c.deepPurple}`,
+                        borderRadius: '8px',
+                        color: c.deepPurple,
+                        cursor: 'pointer',
+                        fontFamily: "'Montserrat', sans-serif",
+                        fontSize: '14px'
+                      }}
+                    >
+                      ✕
+                    </button>
                   </div>
                 ))}
                 {formData.guestNames.length < 5 && (
