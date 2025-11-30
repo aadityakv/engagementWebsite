@@ -436,7 +436,7 @@ const WeddingWebsite = () => {
                   position: 'absolute',
                   top: '12px',
                   right: '12px',
-                  background: `linear-gradient(135deg, ${c.gold}, #D4AF37)`,
+                  background: c.gold,
                   color: c.deepPurple,
                   width: '36px',
                   height: '36px',
