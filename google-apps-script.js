@@ -144,11 +144,21 @@ function sendConfirmationEmail(data) {
 
   // Check if the person responded "no" to the RSVP
   // Normalize the value defensively
-  const attendanceValue = (data.attendance || '').toString().trim().toLowerCase();
-  Logger.log('Normalized attendance value: "%s"', attendanceValue);
+  const rawAttendance = data.attendance;
+  const attendanceValue = (rawAttendance || '').toString().trim().toLowerCase();
+  console.log('Raw attendance value from data: "%s" (type: %s)', rawAttendance, typeof rawAttendance);
+  console.log('Normalized attendance value: "%s"', attendanceValue);
+  console.log('Attendance value length: %s', attendanceValue.length);
+  console.log('Checking if attendance is "no": %s', attendanceValue === 'no');
 
-  if (attendanceValue === 'no') {
-    Logger.log('Guest %s cannot attend; sending regret email', data.email);
+  // Check for "no" response - handle both exact match and common variations
+  const isNotAttending = attendanceValue === 'no' ||
+                         attendanceValue === 'no' ||
+                         attendanceValue.startsWith('no');
+  console.log('isNotAttending final decision: %s', isNotAttending);
+
+  if (isNotAttending) {
+    console.log('Guest %s cannot attend; sending regret email', data.email);
 
     const htmlBody = [
       `Hi ${guestName},`,
@@ -317,8 +327,12 @@ function sendWhatsappOrSms(data) {
 
   // Skip SMS for guests who cannot attend (regret email is already sent)
   const attendanceValue = (data.attendance || '').toString().trim().toLowerCase();
-  if (attendanceValue === 'no') {
-    Logger.log('Guest %s cannot attend; skipping SMS (regret email sent instead)', data.phone);
+  console.log('SMS check - Normalized attendance value: "%s"', attendanceValue);
+  const isNotAttending = attendanceValue === 'no' ||
+                         attendanceValue === 'no' ||
+                         attendanceValue.startsWith('no');
+  if (isNotAttending) {
+    console.log('Guest %s cannot attend; skipping SMS (regret email sent instead)', data.phone);
     return { success: false, message: 'SMS skipped for regrets (email sent)' };
   }
 

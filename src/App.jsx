@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbweGV9TvDeWSlpYVHpUgbpkCJVjszrlefUiDuDxmoduYLtqNW35FhKYthdWhpcsGpv3Tw/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwaNFdjYvyujawdutbTGG_ckVhAr4n1yfiXXGqU1Pe2k3JzcTVnt5y0qPmbCzKaVW96VA/exec';
 
 const WeddingWebsite = () => {
   const [menuOpen, setMenuOpen] = useState(false);
