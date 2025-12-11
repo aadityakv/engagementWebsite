@@ -8,9 +8,9 @@ const WeddingWebsite = () => {
     name: '', email: '', phone: '', attendance: '', guestNames: [], dietary: '', message: ''
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [submittedAttendance, setSubmittedAttendance] = useState('');
   const [formError, setFormError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [lastAttendanceResponse, setLastAttendanceResponse] = useState('');
   const [cardFlipped, setCardFlipped] = useState(false);
   const flipCardRef = useRef(null);
   const hasScrolledRef = useRef(false);
@@ -119,6 +119,8 @@ const WeddingWebsite = () => {
     };
     delete submissionData.guestNames;
 
+    console.log('Submitting data:', submissionData);
+
     try {
       const response = await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
@@ -131,6 +133,7 @@ const WeddingWebsite = () => {
       let result;
       try {
         result = await response.json();
+        console.log('Server response:', result);
       } catch (parseError) {
         throw new Error('Unexpected response from server. Please ensure the Apps Script deployment allows access.');
       }
@@ -139,8 +142,11 @@ const WeddingWebsite = () => {
         throw new Error(result.message || 'Submission failed.');
       }
 
+      // Save the attendance value BEFORE resetting the form
+      const attendanceValue = formData.attendance;
+
       setFormSubmitted(true);
-      setLastAttendanceResponse(result.attendance || '');
+      setSubmittedAttendance(attendanceValue);
       setFormData({
         name: '',
         email: '',
@@ -153,7 +159,7 @@ const WeddingWebsite = () => {
 
       setTimeout(() => {
         setFormSubmitted(false);
-        setLastAttendanceResponse('');
+        setSubmittedAttendance('');
       }, 5000);
     } catch (error) {
       console.error('Error:', error);
@@ -796,7 +802,7 @@ const WeddingWebsite = () => {
 
               {formSubmitted && (
                 <p style={{ textAlign: 'center', marginTop: '16px', color: c.turquoise, fontFamily: "'Montserrat', sans-serif", fontSize: '14px' }}>
-                  {lastAttendanceResponse === 'no'
+                  {submittedAttendance === 'no'
                     ? "Thank you for letting us know. We'll miss you!"
                     : "Thank you! We can't wait to celebrate with you! 🎊"
                   }

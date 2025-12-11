@@ -316,7 +316,8 @@ function sendWhatsappOrSms(data) {
   }
 
   // Skip SMS for guests who cannot attend (regret email is already sent)
-  if (data.attendance && data.attendance.toLowerCase() === 'no') {
+  const attendanceValue = (data.attendance || '').toString().trim().toLowerCase();
+  if (attendanceValue === 'no') {
     Logger.log('Guest %s cannot attend; skipping SMS (regret email sent instead)', data.phone);
     return { success: false, message: 'SMS skipped for regrets (email sent)' };
   }
