@@ -31,8 +31,10 @@ jobs:
 
       - name: Prepare deployment files
         run: |
-          cp google-apps-script.js Code.js
-          echo "✓ Renamed google-apps-script.js to Code.js"
+          # Create Code.gs from google-apps-script.js
+          # This will UPDATE the existing Code.gs in the Google Apps Script project
+          cp google-apps-script.js Code.gs
+          echo "✓ Created Code.gs from google-apps-script.js"
 
       - name: Deploy to Google Apps Script
         uses: daikikatsuragawa/clasp-action@v1.1.0
@@ -43,15 +45,7 @@ jobs:
           clientId: ${{ secrets.CLASP_CLIENT_ID }}
           clientSecret: ${{ secrets.CLASP_CLIENT_SECRET }}
           scriptId: ${{ secrets.CLASP_SCRIPT_ID }}
-          command: 'deploy'
-          deployId: ${{ secrets.CLASP_DEPLOY_ID }}
-
-      - name: Cleanup
-        if: always()
-        run: |
-          rm -f ~/.clasprc.json
-          rm -f Code.js
-          echo "✓ Cleanup completed"
+          command: 'push'
 
       - name: Report deployment
         if: success()

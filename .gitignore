@@ -26,5 +26,6 @@ dist-ssr
 # Clasp credentials (never commit)
 .clasprc.json
 
-# Generated deployment file
+# Generated deployment files
 Code.js
+Code.gs
