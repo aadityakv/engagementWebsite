@@ -181,7 +181,7 @@ function sendConfirmationEmail(data) {
   const htmlBody = [
     `Hi ${guestName},`,
     ' ',
-    'Thank you for RSVPing to our engagement celebration! We can't wait to celebrate with you.',
+    'Thank you for RSVPing to our engagement celebration! We can\'t wait to celebrate with you.',
     ' ',
     `<strong>Event:</strong> ${eventDetails.title}`,
     `<strong>Date:</strong> ${dateText}`,
