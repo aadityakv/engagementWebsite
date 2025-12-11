@@ -34,9 +34,13 @@ jobs:
 
       - name: Setup Clasp authentication
         run: |
+          # Create the .clasprc.json file from the secret
           echo '${{ secrets.CLASP_TOKEN }}' > ~/.clasprc.json
-          if [ -f ~/.clasprc.json ]; then
+
+          # Verify the file was created and has content
+          if [ -f ~/.clasprc.json ] && [ -s ~/.clasprc.json ]; then
             echo "✓ Clasp credentials configured"
+            echo "File size: $(wc -c < ~/.clasprc.json) bytes"
           else
             echo "✗ Failed to configure Clasp credentials"
             exit 1
