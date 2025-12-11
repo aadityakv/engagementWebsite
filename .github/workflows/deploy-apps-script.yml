@@ -29,48 +29,15 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Setup Clasp authentication
-        env:
-          CLASP_TOKEN: ${{ secrets.CLASP_TOKEN }}
-        run: |
-          # Create the .clasprc.json file from the secret
-          echo "$CLASP_TOKEN" > ~/.clasprc.json
-
-          # Verify the file was created and has valid JSON
-          if [ -f ~/.clasprc.json ] && [ -s ~/.clasprc.json ]; then
-            echo "✓ Clasp credentials configured"
-            # Validate it's valid JSON
-            if jq empty ~/.clasprc.json 2>/dev/null; then
-              echo "✓ Valid JSON format"
-            else
-              echo "✗ Invalid JSON format in credentials"
-              exit 1
-            fi
-          else
-            echo "✗ Failed to configure Clasp credentials"
-            exit 1
-          fi
-
       - name: Prepare deployment files
         run: |
           cp google-apps-script.js Code.js
           echo "✓ Renamed google-apps-script.js to Code.js"
 
-          for file in .clasp.json appsscript.json Code.js; do
-            if [ ! -f "$file" ]; then
-              echo "✗ Missing required file: $file"
-              exit 1
-            fi
-          done
-          echo "✓ All required files present"
-
       - name: Deploy to Google Apps Script
-        run: |
-          npx clasp push --force
-          echo "✓ Successfully deployed to Google Apps Script"
+        uses: daikikatsuragawa/deploy-gas-action@v1
+        with:
+          clasprcJson: ${{ secrets.CLASPRC_JSON }}
 
       - name: Cleanup
         if: always()
