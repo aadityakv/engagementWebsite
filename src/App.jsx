@@ -207,11 +207,11 @@ const WeddingWebsite = () => {
         .btn-outline:hover { background: rgba(255,255,255,0.15); border-color: white; }
         
         .btn-solid {
-          padding: 14px 48px; border: none; background: linear-gradient(135deg, #2A9D8F, #1E3A5F);
+          padding: 14px 48px; border: none; background: linear-gradient(135deg, #C9A227, #6B2D5C);
           color: white; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 500;
           letter-spacing: 2px; cursor: pointer; transition: all 0.3s; border-radius: 8px; width: 100%;
         }
-        .btn-solid:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(42,157,143,0.3); }
+        .btn-solid:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(201,162,39,0.3); }
         .btn-solid:disabled { opacity: 0.6; cursor: not-allowed; }
         
         .view-details { 
