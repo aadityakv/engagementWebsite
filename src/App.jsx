@@ -207,7 +207,7 @@ const WeddingWebsite = () => {
         .btn-outline:hover { background: rgba(255,255,255,0.15); border-color: white; }
         
         .btn-solid {
-          padding: 14px 48px; border: none; background: #6B2D5C;
+          padding: 14px 48px; border: none; background: #C4A5C0;
           color: white; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 500;
           letter-spacing: 2px; cursor: pointer; transition: all 0.3s; border-radius: 8px; width: 100%;
         }
