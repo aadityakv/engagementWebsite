@@ -33,10 +33,22 @@ jobs:
         run: npm ci
 
       - name: Setup Clasp authentication
+        env:
+          CLASP_TOKEN: ${{ secrets.CLASP_TOKEN }}
         run: |
-          echo '${{ secrets.CLASP_TOKEN }}' > ~/.clasprc.json
-          if [ -f ~/.clasprc.json ]; then
+          # Create the .clasprc.json file from the secret
+          echo "$CLASP_TOKEN" > ~/.clasprc.json
+
+          # Verify the file was created and has valid JSON
+          if [ -f ~/.clasprc.json ] && [ -s ~/.clasprc.json ]; then
             echo "✓ Clasp credentials configured"
+            # Validate it's valid JSON
+            if jq empty ~/.clasprc.json 2>/dev/null; then
+              echo "✓ Valid JSON format"
+            else
+              echo "✗ Invalid JSON format in credentials"
+              exit 1
+            fi
           else
             echo "✗ Failed to configure Clasp credentials"
             exit 1
