@@ -423,10 +423,18 @@ const WeddingWebsite = () => {
           <div
             ref={flipCardRef}
             className="flip-card"
-            style={{ marginBottom: '48px', cursor: 'pointer' }}
+            style={{ marginBottom: '48px', cursor: 'pointer', touchAction: 'manipulation' }}
             onClick={(e) => {
               // Only handle click on touch devices (not on hover-capable devices)
               if (window.matchMedia('(hover: none)').matches) {
+                e.preventDefault();
+                setCardFlipped(!cardFlipped);
+              }
+            }}
+            onTouchEnd={(e) => {
+              // Handle touch events for better mobile compatibility (especially Samsung)
+              if (window.matchMedia('(hover: none)').matches) {
+                e.preventDefault();
                 setCardFlipped(!cardFlipped);
               }
             }}
