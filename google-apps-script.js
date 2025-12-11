@@ -49,6 +49,7 @@ function doPost(e) {
     const email = data.email || '';
     const phone = data.phone || '';
     const attendance = data.attendance || '';
+    Logger.log('Received attendance value: "%s" (type: %s)', attendance, typeof attendance);
     const dietary = data.dietary || '';
     const message = data.message || '';
 
@@ -116,6 +117,7 @@ function doPost(e) {
     return buildJsonResponse({
       status: 'success',
       message: 'RSVP submitted successfully',
+      attendance: attendance,
       email: emailResult,
       messaging: messagingResult,
       timestamp: new Date().toISOString()
@@ -141,7 +143,11 @@ function sendConfirmationEmail(data) {
   const eventDetails = RSVP_CONFIG.emailConfirmation.eventDetails;
 
   // Check if the person responded "no" to the RSVP
-  if (data.attendance && data.attendance.toLowerCase() === 'no') {
+  // Normalize the value defensively
+  const attendanceValue = (data.attendance || '').toString().trim().toLowerCase();
+  Logger.log('Normalized attendance value: "%s"', attendanceValue);
+
+  if (attendanceValue === 'no') {
     Logger.log('Guest %s cannot attend; sending regret email', data.email);
 
     const htmlBody = [

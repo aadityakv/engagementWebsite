@@ -10,6 +10,7 @@ const WeddingWebsite = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [formError, setFormError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [lastAttendanceResponse, setLastAttendanceResponse] = useState('');
   const [cardFlipped, setCardFlipped] = useState(false);
   const flipCardRef = useRef(null);
   const hasScrolledRef = useRef(false);
@@ -139,6 +140,7 @@ const WeddingWebsite = () => {
       }
 
       setFormSubmitted(true);
+      setLastAttendanceResponse(result.attendance || '');
       setFormData({
         name: '',
         email: '',
@@ -149,7 +151,10 @@ const WeddingWebsite = () => {
         message: ''
       });
 
-      setTimeout(() => setFormSubmitted(false), 5000);
+      setTimeout(() => {
+        setFormSubmitted(false);
+        setLastAttendanceResponse('');
+      }, 5000);
     } catch (error) {
       console.error('Error:', error);
       setFormError(error.message || 'There was an error submitting your RSVP. Please try again.');
@@ -791,7 +796,10 @@ const WeddingWebsite = () => {
 
               {formSubmitted && (
                 <p style={{ textAlign: 'center', marginTop: '16px', color: c.turquoise, fontFamily: "'Montserrat', sans-serif", fontSize: '14px' }}>
-                  Thank you! We can't wait to celebrate with you! 🎊
+                  {lastAttendanceResponse === 'no'
+                    ? "Thank you for letting us know. We'll miss you!"
+                    : "Thank you! We can't wait to celebrate with you! 🎊"
+                  }
                 </p>
               )}
 
