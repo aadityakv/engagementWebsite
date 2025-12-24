@@ -624,19 +624,28 @@ const WeddingWebsite = () => {
             <p style={{ fontFamily: "'Montserrat', sans-serif", color: 'rgba(255,255,255,0.9)', letterSpacing: '3px', fontSize: '12px', textTransform: 'uppercase' }}>Schedule of Events</p>
           </div>
 
-          {/* Under Construction Card */}
+          {/* Event Time Card */}
           <div className="card" style={{ textAlign: 'center', padding: '48px 32px' }}>
             <div style={{
               fontSize: '48px',
               marginBottom: '24px'
-            }}>🚧</div>
+            }}>🎉</div>
             <h3 style={{
-              fontSize: '24px',
+              fontSize: '32px',
               color: c.deepPurple,
               marginBottom: '16px',
               fontWeight: 600,
               fontFamily: "'Cormorant Garamond', Georgia"
-            }}>Coming Soon</h3>
+            }}>5:00 PM - 9:00 PM</h3>
+            <p style={{
+              fontFamily: "'Montserrat', sans-serif",
+              color: c.turquoise,
+              fontSize: '16px',
+              fontWeight: 600,
+              marginBottom: '16px'
+            }}>
+              Join us for an evening celebration
+            </p>
             <p style={{
               fontFamily: "'Montserrat', sans-serif",
               color: c.charcoal,
@@ -644,8 +653,8 @@ const WeddingWebsite = () => {
               fontSize: '14px',
               lineHeight: 1.8
             }}>
-              We're still finalizing the schedule of events.<br />
-              Please check back closer to the date for the full itinerary!
+              Detailed schedule coming soon!<br />
+              Please check back closer to the date for the full itinerary.
             </p>
           </div>
         </div>
