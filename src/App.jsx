@@ -593,7 +593,7 @@ const WeddingWebsite = () => {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '24px' }}>
             {[
-              { icon: '📍', title: 'Venue', main: 'Sugar Land, TX', sub: 'Full address coming soon' },
+              { icon: '📍', title: 'Venue', main: '2806 Sentry Oak Way', sub: 'Sugar Land, TX 77479' },
               { icon: '👗', title: 'Dress Code', main: 'Festive Indian / Cocktail', sub: 'Traditional or elegant attire welcome' },
               { icon: '🏨', title: 'Accommodations', main: 'Coming Soon', sub: 'Hotel block info to follow' }
             ].map((card, i) => (
