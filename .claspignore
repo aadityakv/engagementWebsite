@@ -1,0 +1,41 @@
+# Node modules and dependencies
+node_modules/**
+package.json
+package-lock.json
+
+# Build artifacts
+dist/**
+dist-ssr/**
+
+# Frontend source files
+src/**
+public/**
+index.html
+vite.config.js
+
+# Git and CI/CD
+.git/**
+.github/**
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# Environment and config
+.env
+.env.*
+*.local
+
+# Editor files
+.vscode/**
+.idea/**
+.DS_Store
+
+# Other project files
+CNAME
+savethedate.png
+styles.css
+
+# Source file (we deploy the renamed Code.js version)
+google-apps-script.js

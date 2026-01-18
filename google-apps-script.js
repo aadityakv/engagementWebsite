@@ -45,19 +45,46 @@ function doPost(e) {
     const data = JSON.parse(e.postData.contents);
     Logger.log('Incoming RSVP payload: %s', JSON.stringify(data));
 
-    const rowData = [
-      data.timestamp || new Date().toLocaleString(),
-      data.name || '',
-      data.email || '',
-      data.phone || '',
-      data.attendance || '',
-      data.guests || '',
-      data.dietary || '',
-      data.message || ''
-    ];
+    const timestamp = data.timestamp || new Date().toLocaleString();
+    const email = data.email || '';
+    const phone = data.phone || '';
+    const attendance = data.attendance || '';
+    Logger.log('Received attendance value: "%s" (type: %s)', attendance, typeof attendance);
+    const dietary = data.dietary || '';
+    const message = data.message || '';
 
-    sheet.appendRow(rowData);
-    Logger.log('Row appended for %s', data.email || 'unknown email');
+    // Add row for the main person submitting the form
+    const mainRowData = [
+      timestamp,
+      data.name || '',
+      email,
+      phone,
+      attendance,
+      data.guests || '',
+      dietary,
+      message
+    ];
+    sheet.appendRow(mainRowData);
+    Logger.log('Row appended for main person: %s', data.name || 'unknown name');
+
+    // Add additional rows for each guest (using same email as submitter)
+    if (data.guests) {
+      const guestNames = data.guests.split(',').map(name => name.trim()).filter(name => name !== '');
+      for (const guestName of guestNames) {
+        const guestRowData = [
+          timestamp,
+          guestName,
+          email,
+          phone,
+          attendance,
+          '', // Guest rows have empty guests field (only main submitter tracks the full guest list)
+          dietary,
+          message
+        ];
+        sheet.appendRow(guestRowData);
+        Logger.log('Row appended for guest: %s', guestName);
+      }
+    }
 
     let emailResult;
     if (RSVP_CONFIG.emailConfirmation.enabled) {
@@ -90,6 +117,7 @@ function doPost(e) {
     return buildJsonResponse({
       status: 'success',
       message: 'RSVP submitted successfully',
+      attendance: attendance,
       email: emailResult,
       messaging: messagingResult,
       timestamp: new Date().toISOString()
@@ -113,6 +141,51 @@ function sendConfirmationEmail(data) {
 
   const guestName = data.name || 'there';
   const eventDetails = RSVP_CONFIG.emailConfirmation.eventDetails;
+
+  // Check if the person responded "no" to the RSVP
+  // Normalize the value defensively
+  const rawAttendance = data.attendance;
+  const attendanceValue = (rawAttendance || '').toString().trim().toLowerCase();
+  console.log('Raw attendance value from data: "%s" (type: %s)', rawAttendance, typeof rawAttendance);
+  console.log('Normalized attendance value: "%s"', attendanceValue);
+  console.log('Attendance value length: %s', attendanceValue.length);
+  console.log('Checking if attendance is "no": %s', attendanceValue === 'no');
+
+  // Check for "no" response - handle both exact match and common variations
+  const isNotAttending = attendanceValue === 'no' ||
+                         attendanceValue === 'no' ||
+                         attendanceValue.startsWith('no');
+  console.log('isNotAttending final decision: %s', isNotAttending);
+
+  if (isNotAttending) {
+    console.log('Guest %s cannot attend; sending regret email', data.email);
+
+    const htmlBody = [
+      `Hi ${guestName},`,
+      ' ',
+      'We\'re sorry you can\'t make it to our engagement celebration.',
+      ' ',
+      'If anything changes, please feel free to update your RSVP at <a href="https://snehaandaaditya.com">snehaandaaditya.com</a>.',
+      ' ',
+      `With love,<br>${RSVP_CONFIG.emailConfirmation.fromNames}`
+    ].join('<br>');
+
+    MailApp.sendEmail({
+      to: data.email,
+      subject: 'We received your RSVP',
+      htmlBody: htmlBody,
+      body: htmlBody.replace(/<br>/g, '\n').replace(/<[^>]+>/g, '')
+    });
+    Logger.log('Regret email sent to %s', data.email);
+
+    return {
+      success: true,
+      message: 'Regret email sent',
+      calendarInvite: 'skipped'
+    };
+  }
+
+  // Original email for guests who are attending
   const inviteBlob = buildCalendarInvite(eventDetails, {
     name: data.name || '',
     email: data.email || ''
@@ -124,7 +197,7 @@ function sendConfirmationEmail(data) {
   const htmlBody = [
     `Hi ${guestName},`,
     ' ',
-    'Thank you for RSVPing to our engagement celebration! We can’t wait to celebrate with you.',
+    'Thank you for RSVPing to our engagement celebration! We can\'t wait to celebrate with you.',
     ' ',
     `<strong>Event:</strong> ${eventDetails.title}`,
     `<strong>Date:</strong> ${dateText}`,
@@ -250,6 +323,17 @@ function sendWhatsappOrSms(data) {
   if (!data.phone) {
     Logger.log('No phone number provided; skipping messaging.');
     return { success: false, message: 'No phone number provided' };
+  }
+
+  // Skip SMS for guests who cannot attend (regret email is already sent)
+  const attendanceValue = (data.attendance || '').toString().trim().toLowerCase();
+  console.log('SMS check - Normalized attendance value: "%s"', attendanceValue);
+  const isNotAttending = attendanceValue === 'no' ||
+                         attendanceValue === 'no' ||
+                         attendanceValue.startsWith('no');
+  if (isNotAttending) {
+    console.log('Guest %s cannot attend; skipping SMS (regret email sent instead)', data.phone);
+    return { success: false, message: 'SMS skipped for regrets (email sent)' };
   }
 
   const phone = normalizePhoneNumber(data.phone, RSVP_CONFIG.messaging.defaultCountryCode);

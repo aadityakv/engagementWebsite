@@ -1,16 +1,66 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbweGV9TvDeWSlpYVHpUgbpkCJVjszrlefUiDuDxmoduYLtqNW35FhKYthdWhpcsGpv3Tw/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwaNFdjYvyujawdutbTGG_ckVhAr4n1yfiXXGqU1Pe2k3JzcTVnt5y0qPmbCzKaVW96VA/exec';
 
 const WeddingWebsite = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
-    name: '', email: '', phone: '', attendance: '', guests: '1', dietary: '', message: ''
+    name: '', email: '', phone: '', attendance: '', guestNames: [], dietary: '', message: ''
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [submittedAttendance, setSubmittedAttendance] = useState('');
   const [formError, setFormError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cardFlipped, setCardFlipped] = useState(false);
+  const flipCardRef = useRef(null);
+  const hasScrolledRef = useRef(false);
+
+  // Auto-flip card on scroll for mobile devices
+  useEffect(() => {
+    // Only apply auto-flip on touch devices (phones/tablets without hover capability)
+    const isTouchDevice = window.matchMedia('(hover: none)').matches;
+    if (!isTouchDevice) return;
+
+    const cardElement = flipCardRef.current;
+
+    // Track scroll to ensure we don't flip on initial page load
+    const handleScroll = () => {
+      if (!hasScrolledRef.current && window.scrollY > 50) {
+        hasScrolledRef.current = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          // Only flip if user has actually scrolled (not on initial load)
+          if (!hasScrolledRef.current) return;
+
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
+            // Card is 60% visible and user has scrolled, flip it
+            setCardFlipped(true);
+          } else if (!entry.isIntersecting) {
+            // Card has left the viewport, flip it back
+            setCardFlipped(false);
+          }
+        });
+      },
+      {
+        threshold: [0, 0.6] // Trigger at 0% (leaving) and 60% (entering) visibility
+      }
+    );
+
+    if (cardElement) {
+      observer.observe(cardElement);
+    }
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      observer.disconnect();
+    };
+  }, []);
 
   // Smooth scroll function
   const scrollToSection = (sectionId) => {
@@ -60,10 +110,16 @@ const WeddingWebsite = () => {
     setFormError('');
     setFormSubmitted(false);
 
+    // Filter out empty guest names and join with comma for backend compatibility
+    const filteredGuestNames = formData.guestNames.filter(name => name.trim() !== '');
     const submissionData = {
       ...formData,
+      guests: filteredGuestNames.join(', '),
       timestamp: new Date().toLocaleString()
     };
+    delete submissionData.guestNames;
+
+    console.log('Submitting data:', submissionData);
 
     try {
       const response = await fetch(GOOGLE_SCRIPT_URL, {
@@ -77,6 +133,7 @@ const WeddingWebsite = () => {
       let result;
       try {
         result = await response.json();
+        console.log('Server response:', result);
       } catch (parseError) {
         throw new Error('Unexpected response from server. Please ensure the Apps Script deployment allows access.');
       }
@@ -85,18 +142,25 @@ const WeddingWebsite = () => {
         throw new Error(result.message || 'Submission failed.');
       }
 
+      // Save the attendance value BEFORE resetting the form
+      const attendanceValue = formData.attendance;
+
       setFormSubmitted(true);
+      setSubmittedAttendance(attendanceValue);
       setFormData({
         name: '',
         email: '',
         phone: '',
         attendance: '',
-        guests: '1',
+        guestNames: [],
         dietary: '',
         message: ''
       });
 
-      setTimeout(() => setFormSubmitted(false), 5000);
+      setTimeout(() => {
+        setFormSubmitted(false);
+        setSubmittedAttendance('');
+      }, 5000);
     } catch (error) {
       console.error('Error:', error);
       setFormError(error.message || 'There was an error submitting your RSVP. Please try again.');
@@ -143,11 +207,11 @@ const WeddingWebsite = () => {
         .btn-outline:hover { background: rgba(255,255,255,0.15); border-color: white; }
         
         .btn-solid {
-          padding: 14px 48px; border: none; background: linear-gradient(135deg, #2A9D8F, #1E3A5F);
+          padding: 14px 48px; border: none; background: linear-gradient(135deg, #C9A227, #6B2D5C);
           color: white; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 500;
           letter-spacing: 2px; cursor: pointer; transition: all 0.3s; border-radius: 8px; width: 100%;
         }
-        .btn-solid:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(42,157,143,0.3); }
+        .btn-solid:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(201,162,39,0.3); }
         .btn-solid:disabled { opacity: 0.6; cursor: not-allowed; }
         
         .view-details { 
@@ -161,6 +225,11 @@ const WeddingWebsite = () => {
         @keyframes bounce {
           0%, 100% { transform: translateY(0); }
           50% { transform: translateY(6px); }
+        }
+
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.1); opacity: 0.8; }
         }
         
         .card {
@@ -243,6 +312,7 @@ const WeddingWebsite = () => {
           -webkit-backface-visibility: hidden;
           backface-visibility: hidden;
           border-radius: 16px;
+          position: relative;
         }
 
         .flip-card-back {
@@ -259,6 +329,13 @@ const WeddingWebsite = () => {
           box-shadow: 0 20px 60px rgba(0,0,0,0.4);
           border: 3px solid #C9A227;
           min-height: 400px;
+        }
+
+        /* Hide tap indicator on desktop (hover-capable devices) */
+        @media (hover: hover) and (pointer: fine) {
+          .tap-indicator {
+            display: none !important;
+          }
         }
 
         @media (max-width: 768px) {
@@ -344,11 +421,20 @@ const WeddingWebsite = () => {
 
           {/* Photo - Flip Card */}
           <div
+            ref={flipCardRef}
             className="flip-card"
-            style={{ marginBottom: '48px', cursor: 'pointer' }}
+            style={{ marginBottom: '48px', cursor: 'pointer', touchAction: 'manipulation' }}
             onClick={(e) => {
               // Only handle click on touch devices (not on hover-capable devices)
               if (window.matchMedia('(hover: none)').matches) {
+                e.preventDefault();
+                setCardFlipped(!cardFlipped);
+              }
+            }}
+            onTouchEnd={(e) => {
+              // Handle touch events for better mobile compatibility (especially Samsung)
+              if (window.matchMedia('(hover: none)').matches) {
+                e.preventDefault();
                 setCardFlipped(!cardFlipped);
               }
             }}
@@ -368,6 +454,25 @@ const WeddingWebsite = () => {
                     display: 'block'
                   }}
                 />
+                {/* Subtle flip indicator for mobile - positioned at top right corner */}
+                <div className="tap-indicator" style={{
+                  position: 'absolute',
+                  top: '12px',
+                  right: '12px',
+                  background: c.gold,
+                  color: c.deepPurple,
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                  fontSize: '16px',
+                  animation: 'pulse 2s infinite'
+                }}>
+                  ↻
+                </div>
               </div>
               {/* Back */}
               <div className="flip-card-back">
@@ -407,6 +512,25 @@ const WeddingWebsite = () => {
                   }}>
                     Sugar Land, Texas
                   </p>
+                </div>
+                {/* Subtle flip indicator for mobile - positioned at top right corner */}
+                <div className="tap-indicator" style={{
+                  position: 'absolute',
+                  top: '12px',
+                  right: '12px',
+                  background: c.gold,
+                  color: c.deepPurple,
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                  fontSize: '16px',
+                  animation: 'pulse 2s infinite'
+                }}>
+                  ↻
                 </div>
               </div>
             </div>
@@ -469,9 +593,9 @@ const WeddingWebsite = () => {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '24px' }}>
             {[
-              { icon: '📍', title: 'Venue', main: 'Sugar Land, TX', sub: 'Full address coming soon' },
-              { icon: '👗', title: 'Dress Code', main: 'Festive Indian / Cocktail', sub: 'Traditional or elegant attire welcome' },
-              { icon: '🏨', title: 'Accommodations', main: 'Coming Soon', sub: 'Hotel block info to follow' }
+              { icon: '📍', title: 'Venue', main: '2806 Sentry Oak Way', sub: 'Sugar Land, TX 77479' },
+              { icon: '👗', title: 'Dress Code', main: 'Indian festive - Preferably Pastel colors', sub: 'Traditional or elegant attire welcome' },
+              { icon: '🏨', title: 'Accommodations', main: 'Courtesy Block Secured', sub: 'We secured a courtesy block at Hilton Garden Inn Sugar Land', link: { text: 'Book Your Room', url: 'https://www.hilton.com/en/attend-my-event/houslgi-aysa26-74587b30-689e-4eee-b05f-7e6933f7230/' } }
             ].map((card, i) => (
               <div key={i} className="card">
                 <div style={{
@@ -482,13 +606,64 @@ const WeddingWebsite = () => {
                 <h3 style={{ fontSize: '20px', color: c.deepPurple, marginBottom: '12px', fontWeight: 600, fontFamily: "'Cormorant Garamond', Georgia" }}>{card.title}</h3>
                 <p style={{ fontFamily: "'Montserrat', sans-serif", color: c.turquoise, fontWeight: 600, fontSize: '14px', marginBottom: '6px' }}>{card.main}</p>
                 <p style={{ fontFamily: "'Montserrat', sans-serif", color: c.charcoal, opacity: 0.7, fontSize: '13px' }}>{card.sub}</p>
+                {card.link && (
+                  <a href={card.link.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'Montserrat', sans-serif", color: c.turquoise, fontSize: '13px', fontWeight: 600, textDecoration: 'underline', display: 'block', marginTop: '8px' }}>{card.link.text}</a>
+                )}
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* SCHEDULE */}
+      {/* SCHEDULE - Under Construction */}
+      <section id="schedule-section" style={{
+        padding: '80px 24px 80px 24px',
+        position: 'relative'
+      }}>
+        <div style={{ maxWidth: '560px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+            <p style={{ fontFamily: "'Great Vibes', cursive", fontSize: '28px', color: c.gold, marginBottom: '8px' }}>Saturday</p>
+            <h2 style={{ fontSize: '36px', fontWeight: 600, marginBottom: '16px', fontFamily: "'Cormorant Garamond', Georgia", color: 'white' }}>March 21, 2026</h2>
+            <p style={{ fontFamily: "'Montserrat', sans-serif", color: 'rgba(255,255,255,0.9)', letterSpacing: '3px', fontSize: '12px', textTransform: 'uppercase' }}>Schedule of Events</p>
+          </div>
+
+          {/* Event Time Card */}
+          <div className="card" style={{ textAlign: 'center', padding: '48px 32px' }}>
+            <div style={{
+              fontSize: '48px',
+              marginBottom: '24px'
+            }}>🎉</div>
+            <h3 style={{
+              fontSize: '32px',
+              color: c.deepPurple,
+              marginBottom: '16px',
+              fontWeight: 600,
+              fontFamily: "'Cormorant Garamond', Georgia"
+            }}>5:00 PM - 9:00 PM</h3>
+            <p style={{
+              fontFamily: "'Montserrat', sans-serif",
+              color: c.turquoise,
+              fontSize: '16px',
+              fontWeight: 600,
+              marginBottom: '16px'
+            }}>
+              Join us for an evening celebration
+            </p>
+            <p style={{
+              fontFamily: "'Montserrat', sans-serif",
+              color: c.charcoal,
+              opacity: 0.75,
+              fontSize: '14px',
+              lineHeight: 1.8
+            }}>
+              Detailed schedule coming soon!<br />
+              Please check back closer to the date for the full itinerary.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* SAVED SCHEDULE CODE - To restore: delete the "Under Construction" section above and uncomment this block
       <section id="schedule-section" style={{
         padding: '80px 24px 80px 24px',
         position: 'relative'
@@ -526,6 +701,7 @@ const WeddingWebsite = () => {
           </div>
         </div>
       </section>
+      */}
 
       {/* RSVP */}
       <section id="rsvp-section" style={{
@@ -539,8 +715,76 @@ const WeddingWebsite = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="card" style={{ padding: '36px' }}>
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ display: 'block', fontFamily: "'Montserrat', sans-serif", fontSize: '13px', color: c.deepPurple, marginBottom: '8px', fontWeight: 500 }}>
+                  Full Name *
+                </label>
+                <input type="text" required placeholder="Enter your name"
+                  value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+              </div>
+
+              <div style={{ marginBottom: '20px' }}>
+                <label id="guest-names-label" style={{ display: 'block', fontFamily: "'Montserrat', sans-serif", fontSize: '13px', color: c.deepPurple, marginBottom: '8px', fontWeight: 500 }}>Additional Guests (up to 5)</label>
+                {formData.guestNames.map((guestName, index) => (
+                  <div key={index} style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                    <input
+                      type="text"
+                      placeholder={`Guest ${index + 1} name`}
+                      value={guestName}
+                      aria-label={`Guest ${index + 1} name`}
+                      aria-describedby="guest-names-label"
+                      onChange={e => {
+                        const newGuestNames = [...formData.guestNames];
+                        newGuestNames[index] = e.target.value;
+                        setFormData({...formData, guestNames: newGuestNames});
+                      }}
+                      style={{ flex: 1 }}
+                    />
+                    <button
+                      type="button"
+                      aria-label={`Remove guest ${index + 1}`}
+                      onClick={() => {
+                        const newGuestNames = formData.guestNames.filter((_, i) => i !== index);
+                        setFormData({...formData, guestNames: newGuestNames});
+                      }}
+                      style={{
+                        padding: '8px 12px',
+                        background: 'transparent',
+                        border: `1px solid ${c.deepPurple}`,
+                        borderRadius: '8px',
+                        color: c.deepPurple,
+                        cursor: 'pointer',
+                        fontFamily: "'Montserrat', sans-serif",
+                        fontSize: '14px'
+                      }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+                {formData.guestNames.length < 5 && (
+                  <button
+                    type="button"
+                    aria-label="Add another guest (maximum 5 guests allowed)"
+                    onClick={() => setFormData({...formData, guestNames: [...formData.guestNames, '']})}
+                    style={{
+                      padding: '8px 16px',
+                      background: 'transparent',
+                      border: `1px solid ${c.turquoise}`,
+                      borderRadius: '8px',
+                      color: c.turquoise,
+                      cursor: 'pointer',
+                      fontFamily: "'Montserrat', sans-serif",
+                      fontSize: '13px',
+                      marginTop: '4px'
+                    }}
+                  >
+                    + Add Another Guest
+                  </button>
+                )}
+              </div>
+
               {[
-                { label: 'Full Name(s)', type: 'text', key: 'name', placeholder: 'Enter your name', required: true },
                 { label: 'Email Address', type: 'email', key: 'email', placeholder: 'your@email.com', required: true },
                 { label: 'Phone Number', type: 'tel', key: 'phone', placeholder: '(123) 456-7890' }
               ].map(field => (
@@ -563,11 +807,6 @@ const WeddingWebsite = () => {
               </div>
 
               <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', fontFamily: "'Montserrat', sans-serif", fontSize: '13px', color: c.deepPurple, marginBottom: '8px', fontWeight: 500 }}>Number of Guests *</label>
-                <input type="number" min="1" max="10" required value={formData.guests} onChange={e => setFormData({...formData, guests: e.target.value})} />
-              </div>
-
-              <div style={{ marginBottom: '20px' }}>
                 <label style={{ display: 'block', fontFamily: "'Montserrat', sans-serif", fontSize: '13px', color: c.deepPurple, marginBottom: '8px', fontWeight: 500 }}>Dietary Restrictions</label>
                 <textarea rows={2} placeholder="Any dietary requirements" value={formData.dietary} onChange={e => setFormData({...formData, dietary: e.target.value})} />
               </div>
@@ -583,7 +822,10 @@ const WeddingWebsite = () => {
 
               {formSubmitted && (
                 <p style={{ textAlign: 'center', marginTop: '16px', color: c.turquoise, fontFamily: "'Montserrat', sans-serif", fontSize: '14px' }}>
-                  Thank you! We can't wait to celebrate with you! 🎊
+                  {submittedAttendance === 'no'
+                    ? "Thank you for letting us know. We'll miss you!"
+                    : "Thank you! We can't wait to celebrate with you! 🎊"
+                  }
                 </p>
               )}
 

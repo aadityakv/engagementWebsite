@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Clasp credentials (never commit)
+.clasprc.json
+
+# Generated deployment files
+Code.js
+Code.gs
