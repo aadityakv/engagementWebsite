@@ -595,7 +595,7 @@ const WeddingWebsite = () => {
             {[
               { icon: '📍', title: 'Venue', main: '2806 Sentry Oak Way', sub: 'Sugar Land, TX 77479' },
               { icon: '👗', title: 'Dress Code', main: 'Indian festive - Preferably Pastel colors', sub: 'Traditional or elegant attire welcome' },
-              { icon: '🏨', title: 'Accommodations', main: 'Nearby Hotels', sub: 'Hilton Garden Inn Sugarland, Hyatt Place Sugarland, Best Western Sugarland' }
+              { icon: '🏨', title: 'Accommodations', main: 'Courtesy Block Secured', sub: 'We secured a courtesy block at Hilton Garden Inn Sugar Land', link: { text: 'Book Your Room', url: 'https://www.hilton.com/en/attend-my-event/houslgi-aysa26-74587b30-689e-4eee-b05f-7e6933f7230/' } }
             ].map((card, i) => (
               <div key={i} className="card">
                 <div style={{
@@ -606,6 +606,9 @@ const WeddingWebsite = () => {
                 <h3 style={{ fontSize: '20px', color: c.deepPurple, marginBottom: '12px', fontWeight: 600, fontFamily: "'Cormorant Garamond', Georgia" }}>{card.title}</h3>
                 <p style={{ fontFamily: "'Montserrat', sans-serif", color: c.turquoise, fontWeight: 600, fontSize: '14px', marginBottom: '6px' }}>{card.main}</p>
                 <p style={{ fontFamily: "'Montserrat', sans-serif", color: c.charcoal, opacity: 0.7, fontSize: '13px' }}>{card.sub}</p>
+                {card.link && (
+                  <a href={card.link.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'Montserrat', sans-serif", color: c.turquoise, fontSize: '13px', fontWeight: 600, textDecoration: 'underline', display: 'block', marginTop: '8px' }}>{card.link.text}</a>
+                )}
               </div>
             ))}
           </div>
