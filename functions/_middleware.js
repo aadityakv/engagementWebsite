@@ -124,7 +124,7 @@ function getPasswordPageHTML(error = '') {
       <button type="submit">ENTER</button>
     </form>
   </div>
-  <p class="footer">Don't have the password? Contact the couple.</p>
+  <p class="footer">Don't have the password? Reach out to Sneha or Aaditya!</p>
 </body>
 </html>`;
 }
