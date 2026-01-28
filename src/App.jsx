@@ -595,7 +595,7 @@ const WeddingWebsite = () => {
             {[
               { icon: '📍', title: 'Venue', main: '2806 Sentry Oak Way', sub: 'Sugar Land, TX 77479' },
               { icon: '👗', title: 'Dress Code', main: 'Indian festive - Preferably Pastel colors', sub: 'Traditional or elegant attire welcome' },
-              { icon: '🏨', title: 'Accommodations', main: 'Courtesy Block', sub: 'We got a courtesy block at Hilton Garden Inn Sugar Land', link: { text: 'Book Your Room', url: 'https://www.hilton.com/en/attend-my-event/houslgi-aysa26-74587b30-689e-4eee-b05f-7e6933f7230/' } }
+              { icon: '🏨', title: 'Accommodations', main: 'Courtesy Block Secured', sub: 'We secured a courtesy block at Hilton Garden Inn Sugar Land', link: { text: 'Book Your Room', url: 'https://www.hilton.com/en/attend-my-event/houslgi-aysa26-74587b30-689e-4eee-b05f-7e6933f7230/' } }
             ].map((card, i) => (
               <div key={i} className="card">
                 <div style={{
