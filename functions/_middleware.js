@@ -1,5 +1,6 @@
 // Cloudflare Pages Middleware for Password Protection
 // Set SITE_PASSWORD as an environment variable (secret) in Cloudflare Pages dashboard
+// Set BYPASS_TOKEN as an environment variable (secret) for magic link bypass
 
 const AUTH_COOKIE_NAME = 'site_authenticated';
 const AUTH_COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
@@ -124,7 +125,7 @@ function getPasswordPageHTML(error = '') {
       <button type="submit">ENTER</button>
     </form>
   </div>
-  <p class="footer">Don't have the password? Contact the couple.</p>
+  <p class="footer">Don't have the password? Reach out to Sneha or Aaditya!</p>
 </body>
 </html>`;
 }
@@ -153,6 +154,21 @@ function createAuthCookie(env) {
 export async function onRequest(context) {
   const { request, env, next } = context;
   const url = new URL(request.url);
+
+  // Handle bypass token (magic link)
+  // Usage: Add ?access=YOUR_BYPASS_TOKEN to any URL
+  const bypassToken = url.searchParams.get('access');
+  if (bypassToken && env.BYPASS_TOKEN && bypassToken === env.BYPASS_TOKEN) {
+    // Valid bypass token - set cookie and redirect to same page without token
+    url.searchParams.delete('access');
+    return new Response(null, {
+      status: 302,
+      headers: {
+        'Location': url.pathname + (url.search || ''),
+        'Set-Cookie': createAuthCookie(env)
+      }
+    });
+  }
 
   // Handle authentication POST
   if (url.pathname === '/__auth' && request.method === 'POST') {
